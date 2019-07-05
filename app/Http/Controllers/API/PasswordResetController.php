@@ -9,6 +9,7 @@ use App\Notifications\PasswordResetRequest;
 use App\Notifications\PasswordResetSuccess;
 use App\User;
 use App\PasswordReset;
+use Validator;
 
 class PasswordResetController extends Controller
 {
@@ -21,9 +22,12 @@ class PasswordResetController extends Controller
      */
     public function create(Request $request)
     {
-        $request->validate([
+         $validator = Validator::make($request->all(), [ 
             'email' => 'required|string|email',
         ]);
+        if ($validator->fails()) { 
+            return response()->json(['error'=>$validator->errors()], 401);            
+        }
         $user = User::where('email', $request->email)->first();
         if (!$user)
             return response()->json([
@@ -81,11 +85,15 @@ class PasswordResetController extends Controller
      */
     public function reset(Request $request)
     {
-        $request->validate([
+         $validator = Validator::make($request->all(), [ 
             'email' => 'required|string|email',
             'password' => 'required|string|confirmed',
             'token' => 'required|string'
         ]);
+        if ($validator->fails()) { 
+            return response()->json(['error'=>$validator->errors()], 401);            
+        }
+
         $passwordReset = PasswordReset::where([
             ['token', $request->token],
             ['email', $request->email]
