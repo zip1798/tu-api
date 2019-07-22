@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,6 +12,7 @@ class RegisterConfirmation extends Notification
 {
     use Queueable;
 
+    private $user;
     /**
      * Create a new notification instance.
      *
@@ -18,7 +20,7 @@ class RegisterConfirmation extends Notification
      */
     public function __construct()
     {
-        //
+//        $this->user = $user;
     }
 
     /**
@@ -29,7 +31,7 @@ class RegisterConfirmation extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -56,7 +58,7 @@ class RegisterConfirmation extends Notification
     public function toArray($notifiable)
     {
         return [
-            'user_id' => $notifiable->id,
+            'user_id' => $notifiable>id,
             'email' => $notifiable->email
         ];
     }
