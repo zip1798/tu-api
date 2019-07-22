@@ -22,3 +22,12 @@ Route::get('email-test', function(){
 
     dd('done');
 });
+
+Route::get('email-test2', function(){
+    $user = \App\User::where('email', '=', 'alexandr.ts@gmail.com')->first();
+    if ($user) {
+        $user->notify(new \App\Notifications\RegisterConfirmation());
+    }
+
+    dd('done');
+});
