@@ -16,9 +16,11 @@ Route::get('/', function () {
 });
 
 Route::get('email-test', function(){
-    $details['email'] = 'alexandr.ts@gmail.com';
+    $user = \App\User::where('email', '=', 'alexandr.ts@gmail.com')->first();
+    if ($user) {
+        dispatch(new App\Jobs\SendEmailRegisterConfirmation($user));
+    }
 
-    dispatch(new App\Jobs\SendEmailRegisterConfirmation($details));
 
     dd('done');
 });
