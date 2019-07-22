@@ -41,9 +41,10 @@ class RegisterConfirmation extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->subject('Confirmation of registration')
+                    ->line('Thank you for registrations');
+//                    ->action('Notification Action', url('/'))
+//                    ->line('Thank you for using our application!');
     }
 
     /**
@@ -55,7 +56,16 @@ class RegisterConfirmation extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'user_id' => $notifiable->id,
+            'email' => $notifiable->email
+        ];
+    }
+
+    public function toDatabase($notifiable)
+    {
+        return [
+            'user_id' => $notifiable->id,
+            'email' => $notifiable->email
         ];
     }
 }
