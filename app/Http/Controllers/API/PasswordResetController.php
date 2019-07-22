@@ -9,7 +9,7 @@ use App\Notifications\PasswordResetRequest;
 use App\Notifications\PasswordResetSuccess;
 use App\User;
 use App\PasswordReset;
-use Validator;
+use Illuminate\Validation\Validator;
 
 class PasswordResetController extends Controller
 {
@@ -45,7 +45,7 @@ class PasswordResetController extends Controller
                 new PasswordResetRequest($passwordReset->token)
             );
         return response()->json([
-            'message' => 'We have e-mailed your password reset link!'
+            'success' => 'We have e-mailed your password reset link!'
         ]);
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Jobs\SendEmailRegisterConfirmation;
+use App\Notifications\RegisterConfirmation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller; 
 use App\User; 
@@ -51,7 +52,10 @@ class UserController extends Controller
         $input['password'] = bcrypt($input['password']); 
         $user = User::create($input);
 
+        // todo check what works?
         $this->dispatch(new SendEmailRegisterConfirmation($user));
+        $user->notify(new RegisterConfirmation());
+
 
         $success['token'] =  $user->createToken('TU')-> accessToken;
         $success['user'] =  $user;
