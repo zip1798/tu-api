@@ -14,3 +14,11 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('email-test', function(){
+    $details['email'] = 'alexandr.ts@gmail.com';
+
+    dispatch(new App\Jobs\SendEmailRegisterConfirmation($details));
+
+    dd('done');
+});
