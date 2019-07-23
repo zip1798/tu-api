@@ -29,10 +29,9 @@ class PasswordResetController extends Controller
             return response()->json(['error'=>$validator->errors()], 401);            
         }
         $user = User::where('email', $request->email)->first();
-        if (!$user)
-            return response()->json([
-                'message' => 'We can\'t find a user with that e-mail address.'
-            ], 404);
+        if (!$user) {
+            return response()->json(['error' => 'We can\'t find a user with that e-mail address.'], 404);
+        }
         $passwordReset = PasswordReset::updateOrCreate(
             ['email' => $user->email],
             [
@@ -40,13 +39,10 @@ class PasswordResetController extends Controller
                 'token' => str_random(60)
              ]
         );
-        if ($user && $passwordReset)
-            $user->notify(
-                new PasswordResetRequest($passwordReset->token)
-            );
-        return response()->json([
-            'success' => 'We have e-mailed your password reset link!'
-        ]);
+        if ($user && $passwordReset) {
+            $user->notify(new PasswordResetRequest($passwordReset->token));
+        }
+        return response()->json(['success' => 'We have e-mailed your password reset link!']);
     }
 
     /**
@@ -56,6 +52,7 @@ class PasswordResetController extends Controller
      * @return [string] message
      * @return [json] passwordReset object
      */
+    /*
     public function find($token)
     {
         $passwordReset = PasswordReset::where('token', $token)
@@ -72,6 +69,7 @@ class PasswordResetController extends Controller
         }
         return response()->json($passwordReset);
     }
+    //*/
 
      /**
      * Reset password
@@ -98,20 +96,18 @@ class PasswordResetController extends Controller
             ['token', $request->token],
             ['email', $request->email]
         ])->first();
-        if (!$passwordReset)
-            return response()->json([
-                'message' => 'This password reset token is invalid.'
-            ], 404);
+        if (!$passwordReset) {
+            return response()->json(['error' => 'This password reset token is invalid.'], 404);
+        }
         $user = User::where('email', $passwordReset->email)->first();
-        if (!$user)
-            return response()->json([
-                'message' => 'We can\'t find a user with that e-mail address.'
-            ], 404);
+        if (!$user) {
+            return response()->json(['error' => 'We can\'t find a user with that e-mail address.'], 404);
+        }
         $user->password = bcrypt($request->password);
         $user->save();
         $passwordReset->delete();
         $user->notify(new PasswordResetSuccess($passwordReset));
 
-        return response()->json($user);
+        return response()->json(['success' => $user]);
     }
 }
