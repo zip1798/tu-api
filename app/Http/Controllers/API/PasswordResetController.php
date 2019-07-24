@@ -9,7 +9,7 @@ use App\Notifications\PasswordResetRequest;
 use App\Notifications\PasswordResetSuccess;
 use App\User;
 use App\PasswordReset;
-use Illuminate\Validation\Validator;
+use Validator;
 
 class PasswordResetController extends Controller
 {
@@ -84,7 +84,6 @@ class PasswordResetController extends Controller
     public function reset(Request $request)
     {
          $validator = Validator::make($request->all(), [ 
-            'email' => 'required|string|email',
             'password' => 'required|string|confirmed',
             'token' => 'required|string'
         ]);
@@ -94,7 +93,6 @@ class PasswordResetController extends Controller
 
         $passwordReset = PasswordReset::where([
             ['token', $request->token],
-            ['email', $request->email]
         ])->first();
         if (!$passwordReset) {
             return response()->json(['error' => 'This password reset token is invalid.'], 404);
@@ -108,6 +106,6 @@ class PasswordResetController extends Controller
         $passwordReset->delete();
         $user->notify(new PasswordResetSuccess($passwordReset));
 
-        return response()->json(['success' => $user]);
+        return response()->json(['success' => 'Password has been changed!']);
     }
 }
