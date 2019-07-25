@@ -60,7 +60,7 @@ class UserController extends Controller
         $success['token'] =  $user->createToken('TU')-> accessToken;
         $success['user'] =  $user;
 
-        return response()->json(['success'=>$success], $this-> successStatus); 
+        return response()->json(['success'=>$success], $this->successStatus);
     }
     
     /** 
@@ -71,13 +71,8 @@ class UserController extends Controller
     public function details() 
     { 
         $user = Auth::user(); 
-        return response()->json(['success' => $user], $this-> successStatus); 
+        return response()->json(['success' => $user], $this->successStatus);
     }
 
-    public function profile()
-    {
-        $user = Auth::user();
-        return response()->json(['success' => $user], $this-> successStatus);
-    }
 
 }

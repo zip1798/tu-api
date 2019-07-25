@@ -25,6 +25,8 @@ Route::post('password/reset', 'API\PasswordResetController@reset');
 
 Route::group(['middleware' => 'auth:api'], function(){
 	Route::post('details', 'API\UserController@details');
-    Route::post('profile', 'API\UserController@profile');
+    Route::post('profile', 'API\ProfileController@info');
+    Route::post('profile/update', 'API\ProfileController@update');
+    Route::post('password/update', 'API\ProfileController@password_update');
 });
 
