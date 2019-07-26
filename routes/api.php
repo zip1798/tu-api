@@ -27,7 +27,7 @@ Route::group(['middleware' => 'auth:api'], function(){
 	Route::post('details', 'API\UserController@details');
     Route::post('profile', 'API\ProfileController@info');
     Route::post('profile/update', 'API\ProfileController@update');
-    Route::post('profile/update_avatar', 'API\ProfileController@updateProfile');
-    Route::post('password/update', 'API\ProfileController@password_update');
+    Route::post('profile/update_avatar', 'API\ProfileController@updateAvatar');
+    Route::post('password/update', 'API\ProfileController@updatePassword');
 });
 

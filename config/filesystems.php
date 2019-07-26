@@ -64,6 +64,15 @@ return [
             'url' => env('AWS_URL'),
         ],
 
+        's3-spaces' => [
+            'driver' => 's3-spaces',
+            'key' => env('S3_KEY'),
+            'secret' => env('S3_SECRET'),
+            'region' => env('S3_REGION'), // can be anything
+            'bucket' => env('S3_BUCKET'),// your space name
+            'endpoint' => env('S3_URL') // spaces endpoint (currently : `https://nyc3.digitaloceanspaces.com`)
+        ]
+
     ],
 
 ];

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use App\Repository\ApiHelper;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 use Validator;
 
 
@@ -35,15 +38,34 @@ class ProfileController extends Controller
         return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
     }
 
-    public function updateProfile(Request $request) {
-        // http://image.intervention.io/getting_started/installation
-        // http://image.intervention.io/use/uploads
-        // https://github.com/thephpleague/flysystem-aws-s3-v3
-        // https://xakep.ru/2010/08/12/52949/
-        dd($request->file('file'));
+    public function updateAvatar(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'file' => 'image',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 401);
+        }
+
+        $user = Auth::user();
+//        $file = $request->file('file')->storePublicly('avatar');
+        $resized = Image::make($request->file('file'))->fit(256)->encode('jpg');
+        $filename = $this->generateHashName($resized->__toString(), "avatar/ava-{$user->id}-", 'jpg');
+        if (Storage::put($filename, $resized->__toString(), 'public')) {
+            if ($user->icon) {
+                Storage::delete($user->icon);
+            }
+            $user->update(['icon' => $filename]);
+        }
+
+        return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
     }
 
-    public function password_update(Request $request) {
+    private function generateHashName($string, $prefix = '', $ext = 'jpg' ) {
+        $now = Carbon::now()->toDateTimeString();
+        return $prefix . md5($string.$now) . '.' . $ext;
+    }
+
+    public function updatePassword(Request $request) {
         $validator = Validator::make($request->all(), [
             'new_password' => 'required|confirmed||different:old_password',
             'old_password' => 'required',

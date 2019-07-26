@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\HasApiTokens;
 
 use Illuminate\Notifications\Notifiable;
@@ -18,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'city', 'phone'
+        'name', 'email', 'password', 'city', 'phone', 'icon'
     ];
 
     /**
@@ -38,4 +39,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected $appends = ['icon_url'];
+
+    public function getIconUrlAttribute($value)
+    {
+        return $this->attributes['icon']  ? Storage::url($this->attributes['icon']) : '';
+    }
 }
