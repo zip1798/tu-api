@@ -35,6 +35,14 @@ class ProfileController extends Controller
         return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
     }
 
+    public function updateProfile(Request $request) {
+        // http://image.intervention.io/getting_started/installation
+        // http://image.intervention.io/use/uploads
+        // https://github.com/thephpleague/flysystem-aws-s3-v3
+        // https://xakep.ru/2010/08/12/52949/
+        dd($request->file('file'));
+    }
+
     public function password_update(Request $request) {
         $validator = Validator::make($request->all(), [
             'new_password' => 'required|confirmed||different:old_password',
