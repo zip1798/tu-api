@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Repository\ApiHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
@@ -15,7 +16,7 @@ class ProfileController extends Controller
     public function info()
     {
         $user = Auth::user();
-        return response()->json(['success' => $user], $this->successStatus);
+        return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
     }
 
     public function update(Request $request)
@@ -31,12 +32,12 @@ class ProfileController extends Controller
         $user = Auth::user();
         $user->update($request->all());
 
-        return response()->json(['success' => $user], 200);
+        return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
     }
 
     public function password_update(Request $request) {
         $validator = Validator::make($request->all(), [
-            'new_password' => 'required|confirmed||different:password',
+            'new_password' => 'required|confirmed||different:old_password',
             'old_password' => 'required',
         ]);
         if ($validator->fails()) {
@@ -51,7 +52,7 @@ class ProfileController extends Controller
             'password' => bcrypt($request->get('new_password'))
         ]);
 
-        return response()->json(['success' => 'Ok'], 200);
+        return response()->json(['success' => 'Ok'], ApiHelper::SUCCESS_STATUS);
     }
 
 }
