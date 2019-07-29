@@ -15,7 +15,7 @@ class CreateEventsTable extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user_id')->unsigned();
+            $table->bigInteger('user_id')->unsigned();
             $table->string('title')->default('');
             $table->string('place')->default('');
             $table->string('event_date')->default('');
@@ -24,8 +24,8 @@ class CreateEventsTable extends Migration
             $table->enum('category', ['regular', 'unregular', 'seminar'])->default('unregular');
             $table->enum('status', ['public', 'hidden', 'deleted', 'archived'])->default('public');
             $table->boolean('allow_online')->default(false);
-            $table->text('brief')->default('');
-            $table->text('description')->default('');
+            $table->text('brief');
+            $table->text('description');
             $table->timestamps();
             $table->softDeletes();
 

@@ -31,4 +31,4 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('password/update', 'API\ProfileController@updatePassword');
 });
 
-Route::apiResource('photos', 'PhotoController');
+Route::apiResource('events', 'API\EventController');
