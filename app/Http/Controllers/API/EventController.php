@@ -7,6 +7,12 @@ use App\Http\Controllers\Controller;
 
 class EventController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('role:moderator', ['only' => ['store', 'update']]);
+        $this->middleware('role:admin',   ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource. (GET)
      *

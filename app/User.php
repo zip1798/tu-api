@@ -46,4 +46,16 @@ class User extends Authenticatable
     {
         return $this->attributes['icon']  ? Storage::url($this->attributes['icon']) : '';
     }
+
+    public function hasRole($role)
+    {
+        switch ($role) {
+            case 'user':
+                return in_array($this->role, ['user', 'moderator', 'admin']);
+            case 'moderator':
+                return in_array($this->role, ['moderator', 'admin']);
+            default:
+                return $role && $role == $this->role;
+        }
+    }
 }
