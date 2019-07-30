@@ -28,7 +28,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'role',
     ];
 
     /**
@@ -58,4 +58,10 @@ class User extends Authenticatable
                 return $role && $role == $this->role;
         }
     }
+
+    public function events()
+    {
+        return $this->hasMany('App\Event');
+    }
+
 }

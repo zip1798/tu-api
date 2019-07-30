@@ -29,7 +29,7 @@ class ProfileController extends Controller
             'email' => 'required|email',
         ]);
         if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);
+            return response()->json(['error'=>$validator->errors()], ApiHelper::ERROR_VALIDATE_STATUS);
         }
 
         $user = Auth::user();
@@ -43,7 +43,7 @@ class ProfileController extends Controller
             'file' => 'image',
         ]);
         if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);
+            return response()->json(['error'=>$validator->errors()], ApiHelper::ERROR_VALIDATE_STATUS);
         }
 
         $user = Auth::user();
@@ -71,7 +71,7 @@ class ProfileController extends Controller
             'old_password' => 'required',
         ]);
         if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);
+            return response()->json(['error'=>$validator->errors()], ApiHelper::ERROR_VALIDATE_STATUS);
         }
         $user = Auth::user();
         // https://laracasts.com/discuss/channels/eloquent/old-password-validation

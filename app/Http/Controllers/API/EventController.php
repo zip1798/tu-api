@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Support\Facades\Auth;
+
+use App\Repository\ApiHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Validator;
 
 class EventController extends Controller
 {
@@ -31,7 +35,16 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], ApiHelper::ERROR_VALIDATE_STATUS);
+        }
+
+        $user = Auth::user()->events()->create($request->all());
+
+        return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
     }
 
     /**
