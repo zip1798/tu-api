@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class CheckRole
 {
@@ -15,8 +16,8 @@ class CheckRole
      */
     public function handle($request, Closure $next, $role)
     {
-        if (! $request->user()->hasRole($role)) {
-            return response()->json(['error'=>'You don\'t have rights for this action'], 403);
+        if (!Auth::user() || !Auth::user()->hasRole($role)) {
+            return response()->json(['error'=>'You don\'t have rights for this action ', 'user' => Auth::user()], 403);
 
         }
         return $next($request);

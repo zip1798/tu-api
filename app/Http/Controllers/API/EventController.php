@@ -14,6 +14,7 @@ class EventController extends Controller
 
     public function __construct()
     {
+        $this->middleware('auth:api', ['only' => ['store', 'update', 'destroy']]);
         $this->middleware('role:moderator', ['only' => ['store', 'update']]);
         $this->middleware('role:admin',   ['only' => ['destroy']]);
     }
