@@ -12,6 +12,15 @@ class Event extends Model
     const STATUS_DELETED = 'deleted';
     const STATUS_ARCHIVED = 'archived';
 
+    const CATEGORY_REGULAR = 'regular';
+    const CATEGORY_UNREGULAR = 'unregular';
+    const CATEGORY_SEMINAR = 'seminar';
+    const CATEGORY_OTHER = 'other';
+
+    const statuses = [self::STATUS_PENDING, self::STATUS_PUBLIC, self::STATUS_HIDDEN, self::STATUS_DELETED, self::STATUS_ARCHIVED];
+    const categories = [self::CATEGORY_REGULAR, self::CATEGORY_UNREGULAR, self::CATEGORY_SEMINAR, self::CATEGORY_OTHER];
+
+
     protected $fillable = [
         'title', 'place', 'event_date', 'show_date', 'category', 'status', 'allow_online', 'brief'
         , 'description', 'media_id'
@@ -20,6 +29,11 @@ class Event extends Model
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    public function media()
+    {
+        return $this->belongsTo('App\Media');
     }
 
 }
