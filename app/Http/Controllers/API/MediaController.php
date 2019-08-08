@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Support\Facades\Auth;
-
-use App\Repository\ApiHelper;
+use App\Media;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+
+use Carbon\Carbon;
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+
+use App\Repository\ApiHelper;
 use Validator;
 
-class EventController extends Controller
+class MediaController extends Controller
 {
 
     public function __construct()
@@ -18,8 +25,9 @@ class EventController extends Controller
         $this->middleware('role:moderator', ['only' => ['store', 'update']]);
         $this->middleware('role:admin',   ['only' => ['destroy']]);
     }
+
     /**
-     * Display a listing of the resource. (GET)
+     * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
@@ -29,7 +37,7 @@ class EventController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage. (POST)
+     * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -37,19 +45,38 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required',
+            'category' => 'required',
+            'type' => 'required',
+            'file' => 'image',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], ApiHelper::ERROR_VALIDATE_STATUS);
         }
 
-        $event = Auth::user()->events()->create($request->all());
+        $media = Media::create($request->all());
+        $category = $request->get('category');
 
-        return response()->json(['success' => $event], ApiHelper::SUCCESS_STATUS);
+        $resized = Image::make($request->file('file'))->fit(256)->encode('jpg');
+        $filename = $this->generateHashName($resized->__toString(), "media/{$category}/thumbnail/-{$media->id}-", 'jpg');
+        if (Storage::put($filename, $resized->__toString(), 'public')) {
+            if ($media->thumbnail) {
+                Storage::delete($media->thumbnail);
+            }
+            $media->update(['thumbnail' => $filename]);
+        }
+
+
+        return response()->json(['success' => $media], ApiHelper::SUCCESS_STATUS);
     }
 
+    private function generateHashName($string, $prefix = '', $ext = 'jpg' ) {
+        $now = Carbon::now()->toDateTimeString();
+        return $prefix . md5($string.$now) . '.' . $ext;
+    }
+
+
     /**
-     * Display the specified resource. (GET)
+     * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -60,7 +87,7 @@ class EventController extends Controller
     }
 
     /**
-     * Update the specified resource in storage. (PUT|PATCH)
+     * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -72,7 +99,7 @@ class EventController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage. (DELETE)
+     * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

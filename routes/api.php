@@ -33,4 +33,5 @@ Route::group(['middleware' => 'auth:api'], function(){
 });
 
 Route::apiResource('events', 'API\EventController');
+Route::apiResource('media', 'API\MediaController');
 
