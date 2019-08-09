@@ -64,4 +64,9 @@ class User extends Authenticatable
         return $this->hasMany('App\Event');
     }
 
+    public function media()
+    {
+        return $this->hasMany('App\Media');
+    }
+
 }

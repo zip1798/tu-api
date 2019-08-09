@@ -18,6 +18,21 @@ use Validator;
 
 class MediaController extends Controller
 {
+    const STRUCTURTE = [
+        [
+            'storage'   => 'main',
+            'size'  => 1024,
+            'field'     => 'url',
+            'resize_type' => 'resize-aspect-ratio'
+        ],
+        [
+            'storage'   => 'thumbnail',
+            'size'  => 256,
+            'field'     => 'thumbnail_url',
+            'resize_type' => 'fit'
+        ],
+
+    ];
 
     public function __construct()
     {
@@ -53,20 +68,37 @@ class MediaController extends Controller
             return response()->json(['error' => $validator->errors()], ApiHelper::ERROR_VALIDATE_STATUS);
         }
 
-        $media = Media::create($request->all());
-        $category = $request->get('category');
-
-        $resized = Image::make($request->file('file'))->fit(256)->encode('jpg');
-        $filename = $this->generateHashName($resized->__toString(), "media/{$category}/thumbnail/-{$media->id}-", 'jpg');
-        if (Storage::put($filename, $resized->__toString(), 'public')) {
-            if ($media->thumbnail) {
-                Storage::delete($media->thumbnail);
-            }
-            $media->update(['thumbnail' => $filename]);
-        }
-
+        $media = Auth::user()->media()->create($request->only(['category', 'type']));
+        $this->saveImagesInStorage($request, $media);
 
         return response()->json(['success' => $media], ApiHelper::SUCCESS_STATUS);
+    }
+
+    protected function saveImagesInStorage(Request $request, Media $media) {
+        $category = $request->get('category');
+        foreach(self::STRUCTURTE as $structure) {
+            $image = Image::make($request->file('file'));
+            switch($structure['resize_type']) {
+                case 'fit':
+                    $image->fit($structure['size']);
+                    break;
+                default:
+                    $image->resize($structure['size'], null, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+            }
+            $resized = $image->encode('jpg');
+
+            $filename = $this->generateHashName($resized->__toString(), "media/{$category}/{$structure['storage']}/m-{$media->id}-", 'jpg');
+            if (Storage::put($filename, $resized->__toString(), 'public')) {
+                if ($media->{$structure['field']}) {
+                    Storage::delete($media->{$structure['field']});
+                }
+                $media->{$structure['field']} = $filename;
+            }
+        }
+        $media->save();
     }
 
     private function generateHashName($string, $prefix = '', $ext = 'jpg' ) {
