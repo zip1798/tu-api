@@ -48,7 +48,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['success' => Media::all()], ApiHelper::SUCCESS_STATUS);
     }
 
     /**
