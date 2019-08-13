@@ -136,8 +136,12 @@ class MediaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
+    public function destroy($id) {
+        $media = Media::findOrFail($id);
+        foreach(self::STRUCTURTE as $structure) {
+            Storage::delete($structure['field']);
+        }
+        $media->delete();
+        return response()->json(['success' => 'OK'], ApiHelper::SUCCESS_STATUS);
     }
 }

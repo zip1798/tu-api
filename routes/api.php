@@ -30,8 +30,10 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('profile/update_avatar', 'API\ProfileController@updateAvatar');
     Route::post('password/update', 'API\ProfileController@updatePassword');
 
+    Route::get('role', 'API\UserController@role');
 });
 
 Route::apiResource('events', 'API\EventController');
 Route::apiResource('media', 'API\MediaController');
+
 

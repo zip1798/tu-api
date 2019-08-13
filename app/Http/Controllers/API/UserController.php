@@ -74,5 +74,10 @@ class UserController extends Controller
         return response()->json(['success' => $user], $this->successStatus);
     }
 
+    public function role() {
+        $user = Auth::user();
+        return response()->json(['success' => isset($user->role) ? $user->role : 'guest'], $this->successStatus);
+    }
+
 
 }
