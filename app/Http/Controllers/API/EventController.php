@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Event;
 use Illuminate\Support\Facades\Auth;
 
 use App\Repository\ApiHelper;
@@ -48,15 +49,11 @@ class EventController extends Controller
         return response()->json(['success' => $event], ApiHelper::SUCCESS_STATUS);
     }
 
-    /**
-     * Display the specified resource. (GET)
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        //
+        $event = Event::with('media')->findOrFail($id);
+
+        return response()->json(['success' => $event], ApiHelper::SUCCESS_STATUS);
     }
 
     /**

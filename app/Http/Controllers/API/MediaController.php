@@ -107,24 +107,11 @@ class MediaController extends Controller
     }
 
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         //
@@ -139,7 +126,9 @@ class MediaController extends Controller
     public function destroy($id) {
         $media = Media::findOrFail($id);
         foreach(self::STRUCTURTE as $structure) {
-            Storage::delete($structure['field']);
+            if (!empty($media->{$structure['field']})) {
+                Storage::delete($structure['field']);
+            }
         }
         $media->delete();
         return response()->json(['success' => 'OK'], ApiHelper::SUCCESS_STATUS);
