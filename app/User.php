@@ -69,4 +69,9 @@ class User extends Authenticatable
         return $this->hasMany('App\Media');
     }
 
+    public function rel_events()
+    {
+        return $this->belongsToMany('App\Event', 'event2user', 'user_id', 'event_id');
+    }
+
 }

@@ -36,4 +36,9 @@ class Event extends Model
         return $this->belongsTo('App\Media');
     }
 
+    public function rel_user()
+    {
+        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id');
+    }
+
 }
