@@ -11,6 +11,7 @@ class Event extends Model
     const STATUS_HIDDEN = 'hidden';
     const STATUS_DELETED = 'deleted';
     const STATUS_ARCHIVED = 'archived';
+    const STATUS_DRAFT = 'draft';
 
     const CATEGORY_REGULAR = 'regular';
     const CATEGORY_UNREGULAR = 'unregular';

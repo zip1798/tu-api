@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Media;
+use App\Repository\MediaRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -18,21 +19,6 @@ use Validator;
 
 class MediaController extends Controller
 {
-    const STRUCTURTE = [
-        [
-            'storage'   => 'main',
-            'size'  => 1024,
-            'field'     => 'url',
-            'resize_type' => 'resize-aspect-ratio'
-        ],
-        [
-            'storage'   => 'thumbnail',
-            'size'  => 256,
-            'field'     => 'thumbnail_url',
-            'resize_type' => 'fit'
-        ],
-
-    ];
 
     public function __construct()
     {
@@ -59,6 +45,7 @@ class MediaController extends Controller
      */
     public function store(Request $request)
     {
+        $repository = new MediaRepository();
         $validator = Validator::make($request->all(), [
             'category' => 'required',
             'type' => 'required',
@@ -69,43 +56,10 @@ class MediaController extends Controller
         }
 
         $media = Auth::user()->media()->create($request->only(['category', 'type']));
-        $this->saveImagesInStorage($request, $media);
+        $repository->saveImagesToStorage($request->file('file'), $media);
 
         return response()->json(['success' => $media], ApiHelper::SUCCESS_STATUS);
     }
-
-    protected function saveImagesInStorage(Request $request, Media $media) {
-        $category = $request->get('category');
-        foreach(self::STRUCTURTE as $structure) {
-            $image = Image::make($request->file('file'));
-            switch($structure['resize_type']) {
-                case 'fit':
-                    $image->fit($structure['size']);
-                    break;
-                default:
-                    $image->resize($structure['size'], null, function ($constraint) {
-                        $constraint->aspectRatio();
-                        $constraint->upsize();
-                    });
-            }
-            $resized = $image->encode('jpg');
-
-            $filename = $this->generateHashName($resized->__toString(), "media/{$category}/{$structure['storage']}/m-{$media->id}-", 'jpg');
-            if (Storage::put($filename, $resized->__toString(), 'public')) {
-                if ($media->{$structure['field']}) {
-                    Storage::delete($media->{$structure['field']});
-                }
-                $media->{$structure['field']} = $filename;
-            }
-        }
-        $media->save();
-    }
-
-    private function generateHashName($string, $prefix = '', $ext = 'jpg' ) {
-        $now = Carbon::now()->toDateTimeString();
-        return $prefix . md5($string.$now) . '.' . $ext;
-    }
-
 
     public function show($id)
     {
@@ -125,12 +79,10 @@ class MediaController extends Controller
      */
     public function destroy($id) {
         $media = Media::findOrFail($id);
-        foreach(self::STRUCTURTE as $structure) {
-            if (!empty($media->{$structure['field']})) {
-                Storage::delete($structure['field']);
-            }
-        }
+        $repository = new MediaRepository();
+        $repository->removeImagesFromStorage($media);
         $media->delete();
+
         return response()->json(['success' => 'OK'], ApiHelper::SUCCESS_STATUS);
     }
 }
