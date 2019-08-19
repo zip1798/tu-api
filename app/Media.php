@@ -14,12 +14,12 @@ class Media extends Model
 
     protected $appends = ['full_url', 'full_thumbnail_url'];
 
-    public function getFullUrlAttribute($value)
+    public function getFullUrlAttribute()
     {
         return $this->attributes['url']  ? Storage::url($this->attributes['url']) : '';
     }
 
-    public function getFullThumbnailUrlAttribute($value)
+    public function getFullThumbnailUrlAttribute()
     {
         return $this->attributes['thumbnail_url']  ? Storage::url($this->attributes['thumbnail_url']) : '';
     }

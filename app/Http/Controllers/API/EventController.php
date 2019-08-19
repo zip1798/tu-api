@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Event;
+use App\Repository\EventRepository;
 use Illuminate\Support\Facades\Auth;
 
 use App\Repository\ApiHelper;
@@ -51,7 +52,7 @@ class EventController extends Controller
 
     public function show($id)
     {
-        $event = Event::with('media')->findOrFail($id);
+        $event = Event::with('media')->findOrFail($id)->setAppends(['is_interested', 'is_registered']);
 
         return response()->json(['success' => $event], ApiHelper::SUCCESS_STATUS);
     }
@@ -78,4 +79,18 @@ class EventController extends Controller
     {
         //
     }
+
+    public function interested($id) {
+        $repository = new EventRepository();
+
+        return response()->json(['success' => $repository->toogleInterested($id)], ApiHelper::SUCCESS_STATUS);
+    }
+
+    public function test()
+    {
+        return response()->json(['success' => auth('api')->user()], ApiHelper::SUCCESS_STATUS);
+    }
+
+
+
 }

@@ -27,6 +27,31 @@ class Event extends Model
         , 'description', 'media_id'
     ];
 
+//    protected $appends = ['interested'];
+
+    public function getIsInterestedAttribute()
+    {
+        $result = false;
+        $user = auth('api')->user();
+        if ($user) {
+            $result = $this->interested_user()->where('id', $user->id)->count() > 0;
+        }
+
+        return $result;
+    }
+
+    public function getIsRegisteredAttribute()
+    {
+        $result = false;
+        $user = auth('api')->user();
+        if ($user) {
+            $result = $this->registrated_user()->where('id', $user->id)->count() > 0;
+        }
+
+        return $result;
+    }
+
+
     public function user()
     {
         return $this->belongsTo('App\User');
@@ -40,6 +65,36 @@ class Event extends Model
     public function rel_user()
     {
         return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id');
+    }
+
+    public function interested_user()
+    {
+        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'interest');
+    }
+
+    public function participated_user()
+    {
+        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'participation');
+    }
+
+    public function registrated_user()
+    {
+        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'registration');
+    }
+
+    public function sponsored_user()
+    {
+        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'sponsor');
+    }
+
+    public function backed_user()
+    {
+        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'backer');
+    }
+
+    public function spam_marked_user()
+    {
+        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'backer');
     }
 
 }
