@@ -31,7 +31,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('password/update', 'API\ProfileController@updatePassword');
 
     Route::get('role', 'API\UserController@role');
-    Route::get('event/{id}/interested', 'API\EventController@interested');
+    Route::get('events/{id}/interested', 'API\EventController@interested');
 });
 
 Route::apiResource('events', 'API\EventController');

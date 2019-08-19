@@ -14,14 +14,14 @@ class EventRepository
 {
 
     public function toogleInterested($id) {
-        $event = Event::find('id');
+        $event = Event::find($id);
         $user = auth('api')->user();
-        if ($user) {
+        if ($user && $event) {
             if ($event->is_interested) {
                 $event->interested_user()->detach($user->id);
                 return false;
             } else {
-                $event->interested_user()->detach([$user->id => ['value' => '', 'data' => '']]);
+                $event->interested_user()->attach([$user->id => ['value' => '', 'data' => '']]);
                 return true;
             }
         }
