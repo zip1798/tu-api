@@ -66,7 +66,17 @@ class EventController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], ApiHelper::ERROR_VALIDATE_STATUS);
+        }
+
+        $event = Event::findOrFail($id);
+        $event->update($request->all());
+
+        return $this->show($id);
     }
 
     /**
