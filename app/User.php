@@ -59,6 +59,10 @@ class User extends Authenticatable
         }
     }
 
+    /**
+     * Relations
+     */
+
     public function events()
     {
         return $this->hasMany('App\Event');
@@ -73,5 +77,36 @@ class User extends Authenticatable
     {
         return $this->belongsToMany('App\Event', 'event2user', 'user_id', 'event_id');
     }
+
+    public function interested_events()
+    {
+        return $this->belongsToMany('App\Event', 'event2user', 'user_id', 'event_id')->wherePivot('type', 'interest');
+    }
+
+    public function participated_events()
+    {
+        return $this->belongsToMany('App\Event', 'event2user', 'user_id', 'event_id')->wherePivot('type', 'participation');
+    }
+
+    public function registrated_events()
+    {
+        return $this->belongsToMany('App\Event', 'event2user', 'user_id', 'event_id')->wherePivot('type', 'registration');
+    }
+
+    public function sponsored_events()
+    {
+        return $this->belongsToMany('App\Event', 'event2user', 'user_id', 'event_id')->wherePivot('type', 'sponsor');
+    }
+
+    public function backed_events()
+    {
+        return $this->belongsToMany('App\Event', 'event2user', 'user_id', 'event_id')->wherePivot('type', 'backer');
+    }
+
+    public function spam_marked_events()
+    {
+        return $this->belongsToMany('App\Event', 'event2user', 'user_id', 'event_id')->wherePivot('type', 'spam');
+    }
+
 
 }

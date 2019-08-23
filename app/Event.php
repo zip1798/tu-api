@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -31,6 +32,10 @@ class Event extends Model
 
 //    protected $appends = ['interested'];
 
+    /**
+     * Calculated Attributes
+     */
+
     public function getIsInterestedAttribute()
     {
         $result = false;
@@ -53,6 +58,10 @@ class Event extends Model
         return $result;
     }
 
+
+    /**
+     * Relations
+     */
 
     public function user()
     {
@@ -96,7 +105,26 @@ class Event extends Model
 
     public function spam_marked_user()
     {
-        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'backer');
+        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'spam');
+    }
+
+    /**
+     * Scopes
+     */
+
+    public function scopePublic($query)
+    {
+        return $query->where('status', 'public');
+    }
+
+    public function scopeFuture($query)
+    {
+        return $query->where('show_date', '>=', Carbon::now()->format('Y-m-d'));
+    }
+
+    public function scopePast($query)
+    {
+        return $query->where('show_date', '<', Carbon::now()->format('Y-m-d'));
     }
 
 }

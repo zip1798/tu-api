@@ -38,7 +38,8 @@ class ProfileController extends Controller
         return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
     }
 
-    public function updateAvatar(Request $request) {
+    public function updateAvatar(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'file' => 'image',
         ]);
@@ -60,12 +61,14 @@ class ProfileController extends Controller
         return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
     }
 
-    private function generateHashName($string, $prefix = '', $ext = 'jpg' ) {
+    private function generateHashName($string, $prefix = '', $ext = 'jpg' )
+    {
         $now = Carbon::now()->toDateTimeString();
         return $prefix . md5($string.$now) . '.' . $ext;
     }
 
-    public function updatePassword(Request $request) {
+    public function updatePassword(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'new_password' => 'required|confirmed||different:old_password',
             'old_password' => 'required',
@@ -84,5 +87,11 @@ class ProfileController extends Controller
 
         return response()->json(['success' => 'Ok'], ApiHelper::SUCCESS_STATUS);
     }
+
+    public function events()
+    {
+        // todo related events for authentificated user (main information)
+    }
+
 
 }

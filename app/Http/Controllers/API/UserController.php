@@ -14,12 +14,14 @@ class UserController extends Controller
 {
 
     public $successStatus = 200;
-    /** 
+
+    /**
      * login api 
      * 
      * @return \Illuminate\Http\Response 
      */ 
-    public function login(){ 
+    public function login()
+    {
         if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
             $user = Auth::user(); 
             $success['token'] =  $user->createToken('TU')-> accessToken;
@@ -74,7 +76,8 @@ class UserController extends Controller
         return response()->json(['success' => $user], $this->successStatus);
     }
 
-    public function role() {
+    public function role()
+    {
         $user = Auth::user();
         return response()->json(['success' => [
             'role' => isset($user->role) ? $user->role : 'guest',

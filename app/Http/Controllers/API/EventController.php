@@ -20,22 +20,27 @@ class EventController extends Controller
         $this->middleware('role:moderator', ['only' => ['store', 'update']]);
         $this->middleware('role:admin',   ['only' => ['destroy']]);
     }
-    /**
-     * Display a listing of the resource. (GET)
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $repository = new EventRepository();
+        return response()->json(['success' => $repository->getFuturePublicEventsList()], ApiHelper::SUCCESS_STATUS);
     }
 
-    /**
-     * Store a newly created resource in storage. (POST)
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    public function user_index()
+    {
+        $repository = new EventRepository();
+        $user = Auth::user();
+        if ($user->hasRole('moderator')) {
+            $result = $repository->getFullEventList();
+        } else {
+            $result = $repository->getUserEventList();
+        }
+
+        return response()->json(['success' => $result], ApiHelper::SUCCESS_STATUS);
+    }
+
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
