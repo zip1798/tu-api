@@ -27,7 +27,7 @@ class Event extends Model
 
     protected $fillable = [
         'title', 'place', 'event_date', 'show_date', 'category', 'status', 'allow_online', 'brief'
-        , 'description', 'media_id'
+        , 'description', 'media_id', 'is_open_registration', 'registration_fields', 'html_after_registration'
     ];
 
 //    protected $appends = ['interested'];
