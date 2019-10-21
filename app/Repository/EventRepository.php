@@ -5,6 +5,7 @@ namespace App\Repository;
 
 use App\Event;
 use App\Media;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 
@@ -25,7 +26,7 @@ class EventRepository
                 $event->interested_user()->detach($user->id);
                 return false;
             } else {
-                $event->interested_user()->attach([$user->id => ['value' => '', 'data' => '']]);
+                $event->interested_user()->attach([$user->id => ['type' => 'interest', 'value' => '', 'data' => '']]);
                 return true;
             }
         }
@@ -65,6 +66,40 @@ class EventRepository
             return $event->id; // maybe change sort condition
         });
 
+    }
+
+    public function eventRegistration($data)
+    {
+        $UserRepository = new UserRepository();
+        $result = 'OK';
+        if (!$user = $UserRepository->findByEmail($data['email'])) {
+            $user = $UserRepository->createUser($data);
+        }
+        $this->createEventRegistrationForUser($user, $data);
+        // todo send mails
+        return $result;
+    }
+
+    protected function createEventRegistrationForUser(User $user, $data)
+    {
+        $user->registered_events()->attach([
+            $data['event_id'] => [
+                'type'  => 'registration',
+                'value' => $data['name'],
+                'data'  => $this->prepareDataEventRegistration($data)
+            ]
+        ]);
+    }
+
+    private function prepareDataEventRegistration($data)
+    {
+        $result = "Name: {$data['name']}\n";
+        $result .= "Email: {$data['email']}\n";
+        $result .= "City: {$data['city']}\n";
+        $result .= "Phone: {$data['phone']}\n\n";
+        $result .= "Comments: {$data['comments']}";
+
+        return $result;
     }
 
 }

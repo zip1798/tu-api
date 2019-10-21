@@ -88,7 +88,7 @@ class Event extends Model
         return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'participation');
     }
 
-    public function registrated_user()
+    public function registered_user()
     {
         return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->wherePivot('type', 'registration');
     }

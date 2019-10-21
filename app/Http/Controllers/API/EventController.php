@@ -104,6 +104,27 @@ class EventController extends Controller
         return response()->json(['success' => $repository->toogleInterested($id)], ApiHelper::SUCCESS_STATUS);
     }
 
+    public function register(Request $request)
+    {
+        $repository = new EventRepository();
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'email',
+            'event_id' => 'required', //todo add validation allow open registration for event
+        ]);
+        try {
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors(), ApiHelper::ERROR_VALIDATE_STATUS);
+            }
+            return response()->json(
+                ['success' => $repository->eventRegistration($request->only(['event_id', 'name', 'email', 'city', 'phone', 'comments']))],
+                ApiHelper::SUCCESS_STATUS);
+
+        } catch(\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
+
     public function test()
     {
         return response()->json(['success' => auth('api')->user()], ApiHelper::SUCCESS_STATUS);

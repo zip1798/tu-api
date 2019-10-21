@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::get('role', 'API\UserController@role');
     Route::get('events/{id}/interested', 'API\EventController@interested');
+    Route::post('events/{id}/register', 'API\EventController@register');
     Route::get('user_events', 'API\EventController@user_index');
 });
 
