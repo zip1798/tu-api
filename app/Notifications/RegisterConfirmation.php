@@ -43,9 +43,11 @@ class RegisterConfirmation extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('Confirmation of registration')
-                    ->line('Thank you for registrations');
+            ->subject('Confirmation of registration')
+            ->markdown('mail.user.register_confirmation', ['msg' => 'This is Sparta!']);
+//                    ->line('Thank you for registrations')
 //                    ->action('Notification Action', url('/'))
+//                    ->line('New <b>html</b> text')
 //                    ->line('Thank you for using our application!');
     }
 
