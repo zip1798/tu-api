@@ -14,22 +14,3 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('email-test', function(){
-    $user = \App\User::where('email', '=', 'alexandr.ts@gmail.com')->first();
-    if ($user) {
-        dispatch(new App\Jobs\SendEmailRegisterConfirmation($user));
-    }
-
-
-    dd('done');
-});
-
-Route::get('email-test2', function(){
-    $user = \App\User::where('email', '=', 'alexandr.ts@gmail.com')->first();
-    if ($user) {
-        $user->notify(new \App\Notifications\RegisterConfirmation($user));
-    }
-
-    dd('done');
-});

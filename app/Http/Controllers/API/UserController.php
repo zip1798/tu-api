@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Jobs\SendEmailRegisterConfirmation;
 use App\Notifications\RegisterConfirmation;
+use App\Repository\UserRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller; 
 use App\User; 
@@ -39,7 +40,8 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response 
      */ 
     public function register(Request $request) 
-    { 
+    {
+        $UserRepository = new UserRepository();
         $validator = Validator::make($request->all(), [ 
             'name' => 'required', 
             'email' => 'required|email', 
@@ -50,14 +52,7 @@ class UserController extends Controller
         if ($validator->fails()) { 
             return response()->json(['error'=>$validator->errors()], 401);            
         }
-        $input = $request->all(); 
-        $input['password'] = bcrypt($input['password']); 
-        $user = User::create($input);
-
-        // todo check what works?
-        $this->dispatch(new SendEmailRegisterConfirmation($user));
-        $user->notify(new RegisterConfirmation());
-
+        $user = $UserRepository->createUser($request->all());
 
         $success['token'] =  $user->createToken('TU')-> accessToken;
         $success['user'] =  $user;

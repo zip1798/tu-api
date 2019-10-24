@@ -2,29 +2,23 @@
 
 namespace App\Notifications;
 
-use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class RegisterConfirmation extends Notification
+class EventRegisterNotification extends Notification
 {
     use Queueable;
 
-    private $user;
-    private $data = [
-        'email' => '',
-        'password' => ''
-    ];
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($data = [])
+    public function __construct()
     {
-        $this->data = array_merge($this->data, $data);
+        //
     }
 
     /**
@@ -35,7 +29,7 @@ class RegisterConfirmation extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['mail'];
     }
 
     /**
@@ -46,9 +40,7 @@ class RegisterConfirmation extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-            ->subject('Confirmation of registration')
-            ->markdown('mail.user.register_confirmation', $this->data);
+        return (new MailMessage)->markdown('mail.event.register_notification');
     }
 
     /**
@@ -60,16 +52,7 @@ class RegisterConfirmation extends Notification
     public function toArray($notifiable)
     {
         return [
-            'user_id' => $notifiable>id,
-            'email' => $notifiable->email
-        ];
-    }
-
-    public function toDatabase($notifiable)
-    {
-        return [
-            'user_id' => $notifiable->id,
-            'email' => $notifiable->email
+            //
         ];
     }
 }
