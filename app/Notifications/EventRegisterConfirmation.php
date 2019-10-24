@@ -29,7 +29,7 @@ class EventRegisterConfirmation extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -40,7 +40,9 @@ class EventRegisterConfirmation extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)->markdown('mail.event.register_confirmation');
+        return (new MailMessage)
+            ->subject('Event registration confirmation')
+            ->markdown('mail.event.register_confirmation');
     }
 
     /**
@@ -52,7 +54,16 @@ class EventRegisterConfirmation extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'user_id' => $notifiable->id,
+            'email' => $notifiable->email
+        ];
+    }
+
+    public function toDatabase($notifiable)
+    {
+        return [
+            'user_id' => $notifiable->id,
+            'email' => $notifiable->email
         ];
     }
 }
