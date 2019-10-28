@@ -5,6 +5,8 @@ namespace App\Repository;
 
 use App\Event;
 use App\Media;
+use App\Notifications\EventRegisterConfirmation;
+use App\Notifications\EventRegisterNotification;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
@@ -76,7 +78,11 @@ class EventRepository
             $user = $UserRepository->createUser($data);
         }
         $this->createEventRegistrationForUser($user, $data);
-        // todo send mails
+        if ($event = Event::with('media')->find($data['event_id'])) {
+            $event->user->notify(new EventRegisterNotification($event, $data));
+            $user->notify(new EventRegisterConfirmation($event));
+        }
+
         return $result;
     }
 

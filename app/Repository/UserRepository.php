@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 
+use App\Event;
+use App\Notifications\EventRegisterNotification;
 use App\User;
 use App\Jobs\SendEmailRegisterConfirmation;
 use Illuminate\Notifications\Notifiable;
@@ -37,11 +39,23 @@ class UserRepository
     public static function testMail()
     {
         // $this->dispatch(new SendEmailRegisterConfirmation($user));
-        $user = User::all()->first();
-        $user->notify(new RegisterConfirmation([
-            'email'     => $user->email,
-            'password'  => '111 test password 111'
-        ]));
+//        $user = User::all()->first();
+//        $user->notify(new RegisterConfirmation([
+//            'email'     => $user->email,
+//            'password'  => '111 test password 111'
+//        ]));
+
+        if ($event = Event::with('media')->find(5)) {
+            $event->user->notify(new EventRegisterNotification($event, [
+                'name'      => 'TEst name',
+                'email'     => 'test.test@localhost.com',
+                'city'      => 'Kyiv',
+                'phone'     => '234234234',
+                'comments'  => 'This is Sparta!',
+            ]));
+
+        }
+
     }
 
 }

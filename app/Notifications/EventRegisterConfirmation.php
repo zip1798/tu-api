@@ -11,14 +11,15 @@ class EventRegisterConfirmation extends Notification
 {
     use Queueable;
 
+    private $event = null;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Event $event)
     {
-        //
+        $this->event = $event;
     }
 
     /**
@@ -41,8 +42,9 @@ class EventRegisterConfirmation extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->from($this->event->user->email, $this->event->user->name)
             ->subject('Event registration confirmation')
-            ->markdown('mail.event.register_confirmation');
+            ->markdown('mail.event.register_confirmation', ['event' => $this->event]);
     }
 
     /**

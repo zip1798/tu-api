@@ -1,11 +1,18 @@
 @component('mail::message')
-# Introduction
+# New event registration
 
-The body of your message.
+**Event**<br>
+<b>{{ $event->title }}</b>
+<br><i>{{ $event->place }} - {{ $event->event_date }}</i>
 
-@component('mail::button', ['url' => ''])
-Button Text
-@endcomponent
+**User Data**
+<ul>
+    <li><b>Name:</b> {{ $user['name'] }}</li>
+    <li><b>Email:</b> {{ $user['email'] }}</li>
+    <li><b>City:</b> {{ $user['city'] }}</li>
+    <li><b>Phone:</b> {{ $user['phone'] }}</li>
+    <li><b>Comments:</b> {{ $user['comments'] }}</li>
+</ul>
 
 Thanks,<br>
 {{ config('app.name') }}

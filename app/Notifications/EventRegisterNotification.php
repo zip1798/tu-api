@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Event;
+use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,14 +13,18 @@ class EventRegisterNotification extends Notification
 {
     use Queueable;
 
+    private $event;
+    private $user;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Event $event, $user_data)
     {
-        //
+        $this->event = $event;
+        $this->user_data = $user_data;
     }
 
     /**
@@ -41,8 +47,12 @@ class EventRegisterNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->from(config('mail.from.address'), config('mail.from.name'))
             ->subject('New Event Registration')
-            ->markdown('mail.event.register_notification');
+            ->markdown('mail.event.register_notification', [
+                'event' => $this->event,
+                'user'  => $this->user_data
+            ]);
     }
 
     /**
