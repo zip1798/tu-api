@@ -22,6 +22,12 @@ class ProfileController extends Controller
         return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
     }
 
+    public function silent_info(Request $request)
+    {
+        $user = $request->user('api');
+        return response()->json(['success' => $user], ApiHelper::SUCCESS_STATUS);
+    }
+
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -52,7 +52,7 @@ class Event extends Model
         $result = false;
         $user = auth('api')->user();
         if ($user) {
-            $result = $this->registrated_user()->where('id', $user->id)->count() > 0;
+            $result = $this->registered_user()->where('id', $user->id)->count() > 0;
         }
 
         return $result;

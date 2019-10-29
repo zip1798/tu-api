@@ -37,6 +37,8 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('user_events', 'API\EventController@user_index');
 });
 
+Route::get('silent_profile', 'API\ProfileController@silent_info');
+
 Route::apiResource('events', 'API\EventController');
 Route::apiResource('media', 'API\MediaController');
 

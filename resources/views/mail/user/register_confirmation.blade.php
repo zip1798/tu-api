@@ -1,24 +1,21 @@
 @component('mail::message')
-# Introduction
+# Registration confirmation
 
-The body of your message. {{ $msg }}
+Thank you for registration on site {{ config('app.url') }}
+
+**Your credentials are:**
 
 @component('mail::panel')
-This is the panel content.
+<ul>
+    <li><b>Email: </b> {{ $email }}</li>
+    <li><b>Password: </b> {{ $password }}</li>
+</ul>
 @endcomponent
 
-![product](https://tu-dc-test.gmhost.space/media/event/main/m-18-99f2ccab8c67af941792b657da3a3f9d.jpg)
-
-@component('mail::table')
-| Laravel       | Table         | Example  |
-| ------------- |:-------------:| --------:|
-| Col 2 is      | Centered      | $10      |
-| Col 3 is      | Right-Aligned | $20      |
+@component('mail::button', ['url' => config('app.url')])
+Visit site
 @endcomponent
 
-@component('mail::button', ['url' => ''])
-Button Text
-@endcomponent
 
 Thanks,<br>
 {{ config('app.name') }}
