@@ -74,6 +74,7 @@ class EventRepository
     {
         $UserRepository = new UserRepository();
         $result = 'OK';
+        $data = $this->prepareEventRegistrationData($data);
         if (!$user = $UserRepository->findByEmail($data['email'])) {
             $user = $UserRepository->createUser($data);
         }
@@ -84,6 +85,11 @@ class EventRepository
         }
 
         return $result;
+    }
+
+    protected function prepareEventRegistrationData($data) {
+        $default_data = ['name' => 'n/a', 'email' => 'n/a', 'city' => 'n/a', 'phone' => 'n/a', 'comments' => 'n/a'];
+        return array_merge($default_data, $data);
     }
 
     protected function createEventRegistrationForUser(User $user, $data)
