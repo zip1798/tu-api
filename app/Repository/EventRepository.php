@@ -4,6 +4,7 @@ namespace App\Repository;
 
 
 use App\Event;
+use App\Event2User;
 use App\Media;
 use App\Notifications\EventRegisterConfirmation;
 use App\Notifications\EventRegisterNotification;
@@ -82,6 +83,21 @@ class EventRepository
         if ($event = Event::with('media')->find($data['event_id'])) {
             $event->user->notify(new EventRegisterNotification($event, $data));
             $user->notify(new EventRegisterConfirmation($event));
+        }
+
+        return $result;
+    }
+
+    public function getEventMembers($event_id)
+    {
+        $result = [];
+        $event2user_list = Event2User::where('event_id', $event_id)->with('user')->get()->toArray();
+        foreach($event2user_list as $event2user_item) {
+            if (!isset($result[$event2user_item['user_id']])) {
+                $result[$event2user_item['user_id']] = $event2user_item['user'];
+            }
+            $result[$event2user_item['user_id']][$event2user_item['type']] = $result[$event2user_item['user_id']][$event2user_item['type']] ?? [];
+            $result[$event2user_item['user_id']][$event2user_item['type']][] = $event2user_item['data'];
         }
 
         return $result;

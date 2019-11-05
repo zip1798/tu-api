@@ -125,6 +125,13 @@ class EventController extends Controller
         }
     }
 
+    public function members($id)
+    {
+        $repository = new EventRepository();
+
+        return response()->json(['success' => $repository->getEventMembers($id)], ApiHelper::SUCCESS_STATUS);
+    }
+
     public function test()
     {
         return response()->json(['success' => auth('api')->user()], ApiHelper::SUCCESS_STATUS);
