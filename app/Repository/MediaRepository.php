@@ -29,6 +29,7 @@ class MediaRepository
     ];
 
     public function saveImagesToStorage($file, Media $media) {
+        Image::configure(array('driver' => 'imagick'));
         foreach(self::STRUCTURTE as $structure) {
             $image = Image::make($file);
             switch($structure['resize_type']) {
