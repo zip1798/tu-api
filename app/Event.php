@@ -26,8 +26,9 @@ class Event extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'title', 'place', 'event_date', 'show_date', 'category', 'status', 'allow_online', 'brief'
-        , 'description', 'media_id', 'is_open_registration', 'registration_fields', 'html_after_registration'
+        'title', 'place', 'date', 'expire_from', 'category', 'status', 'is_allow_online', 'brief'
+        , 'description', 'media_id', 'is_open_registration', 'registration_fields'
+        , 'html_after_registration', 'is_approved', 'is_private'
     ];
 
 //    protected $appends = ['interested'];
@@ -119,12 +120,12 @@ class Event extends Model
 
     public function scopeFuture($query)
     {
-        return $query->where('show_date', '>=', Carbon::now()->format('Y-m-d'));
+        return $query->where('expire_from', '>=', Carbon::now()->format('Y-m-d'));
     }
 
     public function scopePast($query)
     {
-        return $query->where('show_date', '<', Carbon::now()->format('Y-m-d'));
+        return $query->where('expire_from', '<', Carbon::now()->format('Y-m-d'));
     }
 
 }
