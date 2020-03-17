@@ -5,6 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Event extends Model
 {
@@ -28,7 +29,7 @@ class Event extends Model
     protected $fillable = [
         'title', 'place', 'date', 'expire_from', 'category', 'status', 'is_allow_online', 'brief'
         , 'description', 'media_id', 'is_open_registration', 'registration_fields'
-        , 'html_after_registration', 'is_approved', 'is_private'
+        , 'html_after_registration', 'is_approved', 'is_private', 'external_link'
     ];
 
 //    protected $appends = ['interested'];
@@ -59,6 +60,36 @@ class Event extends Model
         return $result;
     }
 
+    public function getCurrentUserRelationsAttribute()
+    {
+        $result = [];
+        $user = Auth::user();
+        if ($user) {
+            $list = $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->where('user_id', $user->id)->withPivot('type')->get();
+            foreach($list as $item) {
+                if (!in_array($item->pivot->type, $result)) {
+                    $result[] = $item->pivot->type;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function getPermsAttribute()
+    {
+        $user = Auth::user();
+        $relation_types = $this->getCurrentUserRelationsAttribute();
+        $result = [];
+        if ($this->attributes['is_private'] == 0
+            || $user && ($user->is_admin || $this->attributes['user_id'] == $user->id)
+
+        ) {
+            $result[] = 'read';
+        }
+
+        return $result;
+    }
 
     /**
      * Relations
@@ -76,7 +107,7 @@ class Event extends Model
 
     public function rel_user()
     {
-        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id');
+        return $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->withPivot('type');
     }
 
     public function interested_user()

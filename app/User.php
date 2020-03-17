@@ -42,9 +42,19 @@ class User extends Authenticatable
 
     protected $appends = ['icon_url'];
 
-    public function getIconUrlAttribute($value)
+    public function getIconUrlAttribute()
     {
         return $this->attributes['icon']  ? Storage::url($this->attributes['icon']) : '';
+    }
+
+    public function getIsAdminAttribute()
+    {
+        return $this->attributes['role']  ? $this->attributes['role'] == 'admin' : false;
+    }
+
+    public function getIsModeratorAttribute()
+    {
+        return $this->attributes['role']  ? $this->attributes['role'] == 'moderator' : false;
     }
 
     public function hasRole($role)
