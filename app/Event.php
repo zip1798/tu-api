@@ -21,6 +21,15 @@ class Event extends Model
     const CATEGORY_SEMINAR = 'seminar';
     const CATEGORY_OTHER = 'other';
 
+    const PERM_READ = 'read';
+    const PERM_UPDATE = 'update';
+    const PERM_DELETE = 'delete';
+    const PERM_APPROVE = 'approve';
+    const PERM_MAILING = 'mailing';
+    const PERM_PARTICIPATE = 'participate';
+    const PERM_ALL = [self::PERM_READ, self::PERM_UPDATE, self::PERM_DELETE, self::PERM_APPROVE, self::PERM_MAILING, self::PERM_PARTICIPATE];
+    const PERM_AUTHOR = [self::PERM_READ, self::PERM_UPDATE, self::PERM_MAILING, self::PERM_PARTICIPATE];
+
     const statuses = [self::STATUS_PENDING, self::STATUS_PUBLIC, self::STATUS_HIDDEN, self::STATUS_DELETED, self::STATUS_ARCHIVED];
     const categories = [self::CATEGORY_REGULAR, self::CATEGORY_UNREGULAR, self::CATEGORY_SEMINAR, self::CATEGORY_OTHER];
 
@@ -63,7 +72,7 @@ class Event extends Model
     public function getCurrentUserRelationsAttribute()
     {
         $result = [];
-        $user = Auth::user();
+        $user = auth('api')->user();
         if ($user) {
             $list = $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->where('user_id', $user->id)->withPivot('type')->get();
             foreach($list as $item) {
@@ -76,16 +85,42 @@ class Event extends Model
         return $result;
     }
 
+    public function getUserRelationsAttribute()
+    {
+        $result = [];
+        $list = $this->belongsToMany('App\User', 'event2user', 'event_id', 'user_id')->withPivot('type')->get()->toArray();
+        foreach($list as $item) {
+            if (!isset($result[$item['id']])) {
+                $item['relations'] = [$item['pivot']['type']];
+                unset($item['pivot']);
+                $result[$item['id']] = $item;
+            } else {
+                if (!in_array($item['pivot']['type'], $result[$item['id']]['relations'])) {
+                    $result[$item['id']]['relations'][] = $item['pivot']['type'];
+                }
+            }
+        }
+
+        return $result;
+    }
+
     public function getPermsAttribute()
     {
-        $user = Auth::user();
-        $relation_types = $this->getCurrentUserRelationsAttribute();
-        $result = [];
-        if ($this->attributes['is_private'] == 0
-            || $user && ($user->is_admin || $this->attributes['user_id'] == $user->id)
+        $user = auth('api')->user();
+        if ($user->is_admin) return self::PERM_ALL;
+        if ($this->attributes['user_id'] == $user->id) return self::PERM_AUTHOR;
 
+        $relation_types = $this->getCurrentUserRelationsAttribute();
+        if (in_array(Event2User::TYPE_SPONSOR, $relation_types)) return self::PERM_AUTHOR;
+
+        $result = [];
+        if ($this->attributes['is_private'] == 0 // public events
+            || count(array_intersect($relation_types, [Event2User::TYPE_INVITED, Event2User::TYPE_PARTICIPATION, Event2User::TYPE_REGISTRAION]))
         ) {
-            $result[] = 'read';
+            $result[] = self::PERM_READ;
+        }
+        if (in_array(Event2User::TYPE_PARTICIPATION, $relation_types)) {
+            $result[] = self::PERM_PARTICIPATE;
         }
 
         return $result;

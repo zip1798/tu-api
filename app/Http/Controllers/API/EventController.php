@@ -55,11 +55,12 @@ class EventController extends Controller
         return response()->json(['success' => $event], ApiHelper::SUCCESS_STATUS);
     }
 
-    public function show($id)
+    public function show($id, Request $request)
     {
-        $event = Event::with('media')->findOrFail($id)->setAppends(['is_interested', 'is_registered']);
+        $request->user('api');
+        $event = Event::with(['media'])->findOrFail($id)->setAppends(['is_interested', 'is_registered', 'current_user_relations', 'user_relations']);
 
-        return response()->json(['success' => $event], ApiHelper::SUCCESS_STATUS);
+        return response()->json(['success' => $event->toArray()], ApiHelper::SUCCESS_STATUS);
     }
 
     /**
